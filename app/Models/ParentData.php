@@ -10,7 +10,7 @@ class ParentData extends Model
 {
     use HasFactory;
 
-    protected $table = 'parents'; // Custom name
+    // protected $table = 'parents'; // Custom name
 
     protected $fillable = [
         'applicant_id',

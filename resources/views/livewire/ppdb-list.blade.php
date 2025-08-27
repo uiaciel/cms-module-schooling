@@ -67,15 +67,18 @@
                     <ul class="list-group">
                         @foreach ($ppdbs as $ppdb )
 
-                        <li class="list-group-item" aria-current="true">
-                            <div class="d-flex justify-content-between align-items-center">
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div>
                                 <p><strong>PPDB {{ $ppdb->year }} - {{ $ppdb->description }} </strong>
 
                                     <br />Tanggal : {{ $ppdb->start_date }} s/d {{ $ppdb->end_date }}
                                 </p>
+                            </div>
+                            <div>
                                 <a href="/admin/ppdb/{{ $ppdb->year }}" class="btn btn-primary btn-sm"
                                     wire:navigate='true'> <i class="ti ti-database-export"></i>
                                     Data</a>
+                                <a href="/ppdb/{{$ppdb->year}}/daftar" target="_blank">Link Registrasi</a>
                             </div>
                         </li>
                         @endforeach

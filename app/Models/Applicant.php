@@ -20,7 +20,8 @@ class Applicant extends Model
         'religion',
         'address',
         'phone',
-        'previous_school'
+        'previous_school',
+        'notes'
     ];
 
     public function ppdbPeriod()

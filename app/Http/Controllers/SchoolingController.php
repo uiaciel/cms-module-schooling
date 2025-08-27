@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Modules\Schooling\Models\GraduationStudent;
 use Illuminate\Http\Request;
 use Modules\Schooling\Models\GraduationYear;
+use Modules\Schooling\Models\PpdbRegistration;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Modules\Schooling\Models\Applicant;
 use Modules\Schooling\Models\PpdbPeriod;
@@ -130,6 +131,13 @@ class SchoolingController extends Controller
 
         // Jika lolos, tampilkan halaman hasil kelulusan
         return view('frontend::ppdb.graduation-result', compact('student'));
+    }
+
+    public function pdf($id)
+    {
+        $registration = PpdbRegistration::with('applicant')->findOrFail($id);
+        $pdf = Pdf::loadView('schooling::pdf.registration', compact('registration'));
+        return $pdf->download('bukti-ppdb-' . $registration->registration_code . '.pdf');
     }
 
     public function graduationPdf(Request $request)
