@@ -64,6 +64,8 @@ class Ppdb extends Component
             ]);
             $applicant = $this->ppdb->applicants()->create($this->applicant);
             $this->applicant_id = $applicant->id;
+            $this->step++;
+            return;
         }
         if ($this->step == 2) {
             $this->validate([
@@ -71,16 +73,26 @@ class Ppdb extends Component
                 // ...validasi lain...
             ]);
             ParentData::create(array_merge($this->parent, ['applicant_id' => $this->applicant_id]));
+            $this->step++;
+            return;
         }
         if ($this->step == 3) {
+            // Validasi kebutuhan khusus jika perlu
+            // $this->validate(['applicant.notes' => 'required']);
+            Applicant::where('id', $this->applicant_id)
+                ->update(['notes' => $this->applicant['notes']]);
+            // Generate registration code
+            $this->step++;
+            return;
+        }
+        if ($this->step == 4) {
+
             $this->validate([
                 'birth_certificate' => 'required|file|mimes:pdf,jpg,png',
                 // ...validasi lain...
             ]);
-
             $year = $this->ppdb->year;
             $folder = "public/ppdb/{$year}";
-
             \Modules\Schooling\Models\PpdbDocument::create([
                 'applicant_id' => $this->applicant_id,
                 'birth_certificate' => $this->birth_certificate ? $this->birth_certificate->store($folder) : null,
@@ -89,13 +101,11 @@ class Ppdb extends Component
                 'certificate_pa' => $this->certificate_pa ? $this->certificate_pa->store($folder) : null,
             ]);
 
-            // Generate registration code
             $today = now()->format('Y-m-d');
             $countToday = \Modules\Schooling\Models\PpdbRegistration::whereDate('created_at', $today)->count() + 1;
             $random = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 2));
             $slug = $this->ppdb->year;
             $code = 'PPDB' . $slug . '-' . str_pad($countToday, 4, '0', STR_PAD_LEFT) . '-' . $random;
-
             // Simpan registration
             $registration = \Modules\Schooling\Models\PpdbRegistration::create([
                 'applicant_id' => $this->applicant_id,
@@ -107,8 +117,11 @@ class Ppdb extends Component
             ]);
             $this->registration_code = $code;
             $this->pdf_link = route('ppdb.registration.pdf', $registration->id);
+            $this->step++;
+            $this->dispatch('registrationFinished');
+            return;
+            return;
         }
-        $this->step++;
     }
 
     public function prevStep()

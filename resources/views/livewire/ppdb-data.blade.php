@@ -1,15 +1,100 @@
-{{-- filepath: c:\laragon\www\Test\SuryaCMS\Modules\Schooling\resources\views\livewire\ppdb-data.blade.php --}}
 <div>
-    <h3 class="mb-4">Data Pendaftar PPDB {{ $year }}</h3>
+    {{-- Baris 1: Header & Info --}}
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="mb-1">Data PPDB {{ $year }}</h3>
+                    <div class="row">
+                        <div class="col-md-4">
+                            {{ $ppdb->description ?? 'Deskripsi belum tersedia.' }}
+                            <div class="mb-2 text-muted small">
+                                <span class="me-3"><i class="bi bi-calendar-event"></i>
 
+                                    Buka: {{ $ppdb->start_date }}
+                                    | Tutup: {{ $ppdb->end_date }}
+                                </span>
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-8">
+                            <form wire:submit.prevent="filter">
+
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" placeholder="Cari Kode Registrasi"
+                                        wire:model.defer="filter_registration_code">
+                                    <input type="text" class="form-control" placeholder="Cari Nama Lengkap"
+                                        wire:model.defer="filter_full_name">
+                                    <select class="form-select" wire:model.defer="filter_status">
+                                        <option value="">Semua Status</option>
+                                        @foreach ($statusOptions as $opt)
+                                        <option value="{{ $opt }}">{{ ucfirst($opt) }}</option>
+                                        @endforeach
+                                    </select>
+                                    <button class="btn btn-primary " type="submit">Filter</button>
+                                    <button class="btn btn-secondary " type="button"
+                                        wire:click="resetFilter">Reset</button>
+
+                                </div>
+
+                            </form>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Flash Message --}}
     @if (session()->has('success'))
     <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
+    {{-- Baris 3: Judul Tabel & Bulk Update --}}
+    <div class="row mb-2 align-items-center">
+
+        <div class="col-md-8 text-end">
+
+            <form wire:submit.prevent="bulkUpdateStatus">
+                <div class="input-group mb-3">
+                    <label class="input-group-text" x-text="`${$wire.selectedIds.length} terpilih`"
+                        for="inputGroupSelect01"></label>
+                    <select class="form-select w-20" wire:model.defer="bulk_status">
+                        <option value="">Pilih Status</option>
+                        @foreach ($statusOptions as $opt)
+                        <option value="{{ $opt }}">{{ ucfirst($opt) }}</option>
+                        @endforeach
+                    </select>
+                    <button class="btn btn-primary" type="submit" wire:click="bulkUpdateStatus"
+                        wire:loading.attr="disabled" x-bind:disabled="!$wire.selectedIds.length">
+                        Update Terpilih
+                    </button>
+
+                </div>
+
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="mb-1">
+                <span class="badge bg-primary">Total: {{ $totalRegistrasi }}</span>
+                <span class="badge bg-success">Terverifikasi: {{ $totalVerifikasi }}</span>
+                <span class="badge bg-warning text-dark">Belum Verifikasi: {{ $totalNonVerifikasi }}</span>
+            </div>
+
+        </div>
+    </div>
+
+    {{-- Tabel Data --}}
     <div class="table-responsive">
+
         <table class="table table-bordered align-middle">
             <thead class="table-light">
                 <tr>
+
+                    <th><input type="checkbox" wire:model="selectAll"></th>
                     <th>Kode Registrasi</th>
                     <th>Tanggal Register</th>
                     <th>Nama Lengkap</th>
@@ -21,18 +106,17 @@
             <tbody>
                 @forelse ($registrations as $reg)
                 <tr>
+                    <td><input type="checkbox" wire:model="selectedIds" value="{{ $reg->id }}"></td>
                     <td>{{ $reg->registration_code }}</td>
-                    <td>{{ $reg->registered_at ? \Carbon\Carbon::parse($reg->registered_at)->format('d-m-Y H:i') : '-'
-                        }}</td>
+                    <td>{{ $reg->registered_at ? \Carbon\Carbon::parse($reg->registered_at)->format('d-m-Y H:i') :
+                        '-' }}</td>
                     <td>{{ $reg->applicant->full_name ?? '-' }}</td>
                     <td>
                         {{ $reg->applicant->place_of_birth ?? '-' }},
                         {{ $reg->applicant->date_of_birth ?
                         \Carbon\Carbon::parse($reg->applicant->date_of_birth)->format('d-m-Y') : '-' }}
                     </td>
-                    <td>
-                        <span class="badge bg-info">{{ $reg->status }}</span>
-                    </td>
+                    <td><span class="badge bg-info">{{ ucfirst($reg->status) }}</span></td>
                     <td>
                         <button class="btn btn-sm btn-primary" wire:click="showDetail({{ $reg->id }})">
                             Detail &amp; Verifikasi
@@ -41,14 +125,14 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="text-center">Belum ada data pendaftar.</td>
+                    <td colspan="7" class="text-center">Belum ada data pendaftar.</td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
+
     </div>
 
-    {{-- Modal Detail --}}
     @if ($showModal && $selectedRegistration)
     <div class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.3)">
         <div class="modal-dialog modal-xl">
@@ -131,7 +215,6 @@
                                     <form wire:submit.prevent="updateStatus">
                                         <div class="row align-items-end">
                                             <div class="col-md-8 mb-2 mb-md-0">
-                                                <label for="status" class="form-label">Pilih Status</label>
                                                 <select id="status" class="form-select" wire:model="status">
                                                     @foreach ($statusOptions as $opt)
                                                     <option value="{{ $opt }}">{{ $opt }}</option>

@@ -1,4 +1,24 @@
 <div class="container py-5">
+    @push('scripts')
+    <script>
+        // Prevent accidental reload/refresh/close during registration steps 1-4
+    window.addEventListener('beforeunload', function (e) {
+        // Cek jika masih di step proses (belum selesai registrasi)
+        @this.step = @json($step);
+        if (@this.step > 0 && @this.step < 5) {
+            e.preventDefault();
+            e.returnValue = 'Data pendaftaran Anda belum selesai. Yakin ingin meninggalkan halaman ini?';
+            return 'Data pendaftaran Anda belum selesai. Yakin ingin meninggalkan halaman ini?';
+        }
+    });
+
+    // Hilangkan warning jika sudah selesai (step 5)
+    window.livewire.on('registrationFinished', () => {
+        window.onbeforeunload = null;
+    });
+    </script>
+    @endpush
+
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="card shadow-lg p-4">
@@ -22,18 +42,23 @@
                         <div class="text-center">
                             <span
                                 class="badge rounded-pill p-2 {{ $step == 3 ? 'bg-success' : 'bg-secondary' }}">3</span>
-                            <div class="mt-2 d-none d-md-block">Upload Dokumen</div>
+                            <div class="mt-2 d-none d-md-block">Kebutuhan Khusus</div>
                         </div>
                         <div class="text-center">
                             <span
                                 class="badge rounded-pill p-2 {{ $step == 4 ? 'bg-success' : 'bg-secondary' }}">4</span>
+                            <div class="mt-2 d-none d-md-block">Upload Dokumen</div>
+                        </div>
+                        <div class="text-center">
+                            <span
+                                class="badge rounded-pill p-2 {{ $step == 5 ? 'bg-success' : 'bg-secondary' }}">5</span>
                             <div class="mt-2 d-none d-md-block">Registrasi</div>
                         </div>
                     </div>
 
                     <div class="progress mb-4" style="height: 10px;">
                         <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
-                            style="width: {{ ($step / 4) * 100 }}%" aria-valuenow="{{ ($step / 4) * 100 }}"
+                            style="width: {{ ($step / 5) * 100 }}%" aria-valuenow="{{ ($step / 5) * 100 }}"
                             aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
 
@@ -113,13 +138,7 @@
                                     oninput="this.value = this.value.toUpperCase()"
                                     wire:model.defer="applicant.previous_school" placeholder="Asal Sekolah">
                             </div>
-                            <div class="col-12">
-                                <label for="notes" class="form-label fw-bold">Apakah ananda memiliki kebutuhan khusus
-                                    ?</label>
-                                <textarea id="notes" class="form-control"
-                                    oninput="this.value = this.value.toUpperCase()" wire:model.defer="applicant.notes"
-                                    placeholder="Apakah Ananda memiliki kebutuhan khusus?" required></textarea>
-                            </div>
+
                         </div>
                         <div class="d-grid mt-4">
                             <button type="submit" class="btn btn-success btn-lg">Lanjut</button>
@@ -181,6 +200,54 @@
 
                     {{-- STEP 3: UPLOAD DOKUMEN --}}
                     @elseif ($step == 3)
+
+                    <form wire:submit.prevent="nextStep">
+                        <h4 class="mb-4">Anak Berkebutuhan Khusus</h4>
+                        <div class="row">
+
+                            <div class="col-12 mb-3">
+                                <div class="form-group">
+                                    <label>Apakah ananda memiliki kebutuhan khusus</label><br>
+                                    <div class="d-flex">
+                                        <div class="form-check me-4">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                                id="flexRadioDefault1">
+                                            <label class="form-check-label" for="flexRadioDefault1">
+                                                Ya
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                                id="flexRadioDefault2" checked="">
+                                            <label class="form-check-label" for="flexRadioDefault2">
+                                                Tidak
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="notes" class="form-label fw-bold">Jika Iya, Mohon jelaskan kebutuhan khusus
+                                    yang
+                                    dimiliki ananda (jenis, kondisi, atau penanganan yang pernah dilakukan) ?</label>
+                                <textarea id="notes" class="form-control"
+                                    oninput="this.value = this.value.toUpperCase()" wire:model.defer="applicant.notes"
+                                    placeholder="Jika Tidak, Silahkan Kosongkan dan Lanjutkan Registrasi"></textarea>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <button type="button" wire:click="prevStep" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left me-2"></i> Kembali
+                                </button>
+                                <button type="submit" class="btn btn-success">
+                                    Lanjut <i class="bi bi-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                    </form>
+
+                    @elseif ($step == 4)
+
                     <form wire:submit.prevent="nextStep" enctype="multipart/form-data">
                         <h4 class="mb-4">Upload Dokumen</h4>
 
@@ -249,14 +316,15 @@
                             <button type="button" wire:click="prevStep" class="btn btn-secondary">
                                 <i class="bi bi-arrow-left me-2"></i> Kembali
                             </button>
-                            <button type="submit" class="btn btn-success" wire:loading.attr="disabled">
-                                <i class="bi bi-check-circle me-2"></i> Selesai &amp; Registrasi
+                            <button type="submit" class="btn btn-success" wire:click="nextStep">
+                                <i class="bi bi-check-circle me-2"></i> Kirim Data
+
                             </button>
                         </div>
                     </form>
 
                     {{-- STEP 4: REGISTRASI & BUKTI PENDAFTARAN --}}
-                    @elseif ($step == 4)
+                    @elseif ($step == 5)
                     <div class="alert alert-success text-center">
                         <h4 class="mb-3">Pendaftaran Berhasil!</h4>
                         <p class="mb-1">Kode Registrasi Anda:</p>
