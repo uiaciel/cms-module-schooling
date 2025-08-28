@@ -17,7 +17,8 @@ class PpdbRegistration extends Model
         'notes',
         'registered_at',
         'verified_at',
-        'accepted_at'
+        'accepted_at',
+        'ppdb_period_id'
     ];
 
     public function applicant()

@@ -1,6 +1,6 @@
 {{-- filepath: c:\laragon\www\Test\SuryaCMS\Modules\Schooling\resources\views\livewire\ppdb-data.blade.php --}}
 <div>
-    <h3 class="mb-4">Data Pendaftar PPDB</h3>
+    <h3 class="mb-4">Data Pendaftar PPDB {{ $year }}</h3>
 
     @if (session()->has('success'))
     <div class="alert alert-success">{{ session('success') }}</div>
@@ -65,10 +65,10 @@
                                     <h6 class="mb-3 card-title">Foto Pendaftar</h6>
                                     @if ($selectedRegistration->applicant->document &&
                                     $selectedRegistration->applicant->document->photo)
-                                    <img src="{{ asset('storage/' . $selectedRegistration->applicant->document->photo) }}"
+                                    <img src="{{ route('admin.file', $selectedRegistration->applicant->document->photo) }}"
                                         class="img-fluid rounded border mb-2" alt="Pas Foto"
                                         style="max-height: 200px; object-fit: cover;">
-                                    <a href="{{ asset('storage/' . $selectedRegistration->applicant->document->photo) }}"
+                                    <a href="{{ route('admin.file', $selectedRegistration->applicant->document->photo) }}"
                                         target="_blank" class="d-block">Lihat Penuh</a>
                                     @else
                                     <div class="text-muted">Tidak ada foto</div>
@@ -339,14 +339,14 @@
                                                     <div class="document-item text-center">
                                                         <label class="form-label text-muted d-block mb-2">Akta
                                                             Kelahiran</label>
-                                                        <a href="{{ asset('storage/' . $selectedRegistration->applicant->document->birth_certificate) }}"
+                                                        <a href="{{ route('admin.file', $selectedRegistration->applicant->document->birth_certificate) }}"
                                                             target="_blank">
-                                                            <img src="{{ asset('storage/' . $selectedRegistration->applicant->document->birth_certificate) }}"
+                                                            <img src="{{ route('admin.file', $selectedRegistration->applicant->document->birth_certificate) }}"
                                                                 class="img-fluid rounded border" alt="Akta Kelahiran"
                                                                 style="height: 150px; width: 100%; object-fit: cover;">
                                                         </a>
                                                         <small class="d-block mt-2"><a
-                                                                href="{{ asset('storage/' . $selectedRegistration->applicant->document->birth_certificate) }}"
+                                                                href="{{ route('admin.file', $selectedRegistration->applicant->document->birth_certificate) }}"
                                                                 target="_blank">Lihat</a></small>
                                                     </div>
                                                 </div>
@@ -356,14 +356,14 @@
                                                     <div class="document-item text-center">
                                                         <label class="form-label text-muted d-block mb-2">Kartu
                                                             Keluarga</label>
-                                                        <a href="{{ asset('storage/' . $selectedRegistration->applicant->document->family_card) }}"
+                                                        <a href="{{ route('admin.file', $selectedRegistration->applicant->document->family_card) }}"
                                                             target="_blank">
-                                                            <img src="{{ asset('storage/' . $selectedRegistration->applicant->document->family_card) }}"
+                                                            <img src="{{ route('admin.file', $selectedRegistration->applicant->document->family_card) }}"
                                                                 class="img-fluid rounded border" alt="Kartu Keluarga"
                                                                 style="height: 150px; width: 100%; object-fit: cover;">
                                                         </a>
                                                         <small class="d-block mt-2"><a
-                                                                href="{{ asset('storage/' . $selectedRegistration->applicant->document->family_card) }}"
+                                                                href="{{ route('admin.file', $selectedRegistration->applicant->document->family_card) }}"
                                                                 target="_blank">Lihat</a></small>
                                                     </div>
                                                 </div>
@@ -373,14 +373,14 @@
                                                     <div class="document-item text-center">
                                                         <label class="form-label text-muted d-block mb-2">Pas
                                                             Foto</label>
-                                                        <a href="{{ asset('storage/' . $selectedRegistration->applicant->document->photo) }}"
+                                                        <a href="{{ route('admin.file', $selectedRegistration->applicant->document->photo) }}"
                                                             target="_blank">
-                                                            <img src="{{ asset('storage/' . $selectedRegistration->applicant->document->photo) }}"
+                                                            <img src="{{ route('admin.file', $selectedRegistration->applicant->document->photo) }}"
                                                                 class="img-fluid rounded border" alt="Pas Foto"
                                                                 style="height: 150px; width: 100%; object-fit: cover;">
                                                         </a>
                                                         <small class="d-block mt-2"><a
-                                                                href="{{ asset('storage/' . $selectedRegistration->applicant->document->photo) }}"
+                                                                href="{{ route('admin.file', $selectedRegistration->applicant->document->photo) }}"
                                                                 target="_blank">Lihat</a></small>
                                                     </div>
                                                 </div>
@@ -391,15 +391,15 @@
                                                         <label class="form-label text-muted d-block mb-2">Sertifikat
                                                             Pendidikan
                                                             Agama</label>
-                                                        <a href="{{ asset('storage/' . $selectedRegistration->applicant->document->certificate_pa) }}"
+                                                        <a href="{{ route('admin.file', $selectedRegistration->applicant->document->certificate_pa) }}"
                                                             target="_blank">
-                                                            <img src="{{ asset('storage/' . $selectedRegistration->applicant->document->certificate_pa) }}"
+                                                            <img src="{{ route('admin.file', $selectedRegistration->applicant->document->certificate_pa) }}"
                                                                 class="img-fluid rounded border"
                                                                 alt="Sertifikat Pendidikan Agama"
                                                                 style="height: 150px; width: 100%; object-fit: cover;">
                                                         </a>
                                                         <small class="d-block mt-2"><a
-                                                                href="{{ asset('storage/' . $selectedRegistration->applicant->document->certificate_pa) }}"
+                                                                href="{{ route('admin.file', $selectedRegistration->applicant->document->certificate_pa) }}"
                                                                 target="_blank">Lihat</a></small>
                                                     </div>
                                                 </div>

@@ -1,14 +1,37 @@
 <div>
-    <div class="d-flex mb-3">
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="mb-0 text-secondary">📝 PPDB <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#ppdbModal">
+                    Create
+                </button> </h3>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Admin</a></li>
+                    <li class="breadcrumb-item"><a href="#" class="text-decoration-none">PPDB</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Index</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
 
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="#">Admin</a></li>
-                <li class="breadcrumb-item"><a href="#">PPDB</a></li>
-                <li class="breadcrumb-item active"><a href="#">Index</a></li>
-                {{-- <li class="breadcrumb-item active" aria-current="page">Data</li> --}}
-            </ol>
-        </nav>
+    <!-- Modal -->
+    <div class="modal fade" id="ppdbModal" tabindex="-1" aria-labelledby="ppdbModalLabel" aria-hidden="true">
+        <div class="modal-dialog        ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ppdbModalLabel">PPDB Create</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <livewire:schooling::ppdb-create />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     @if (session()->has('error'))
@@ -45,39 +68,25 @@
     @endif
 
     <div class="row">
-        <div class="col-lg-4">
-            <div class="card">
-                <div class="card-body">
-                    {{-- <h5 class="card-title">Card title</h5>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
-                        card's content.</p>
-                    <a href="#" class="btn btn-primary">Go somewhere</a>
-                    --}}
 
-                    <livewire:schooling::ppdb-create />
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-8">
+        <div class="col-lg-12">
             <div class="card">
 
                 <div class="card-body">
-                    <h3 class="mb-3">List PPDB</h3>
-
                     <ul class="list-group">
                         @foreach ($ppdbs as $ppdb )
 
                         <li class="list-group-item d-flex justify-content-between align-items-start">
                             <div>
-                                <p><strong>PPDB {{ $ppdb->year }} - {{ $ppdb->description }} </strong>
-
+                                <p><strong>PPDB {{ $ppdb->year }}</strong>
+                                    <br />Deskripsi : {{ $ppdb->description }}
                                     <br />Tanggal : {{ $ppdb->start_date }} s/d {{ $ppdb->end_date }}
                                 </p>
                             </div>
                             <div>
-                                <a href="/admin/ppdb/{{ $ppdb->year }}" class="btn btn-primary btn-sm"
+                                <a href="/admin/ppdb/{{ $ppdb->year }}" class="btn btn-primary btn-sm me-3"
                                     wire:navigate='true'> <i class="ti ti-database-export"></i>
-                                    Data</a>
+                                    Data Masuk</a>
                                 <a href="/ppdb/{{$ppdb->year}}/daftar" target="_blank">Link Registrasi</a>
                             </div>
                         </li>

@@ -44,5 +44,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Route::get('reports', ReportIndex::class)->name('report.index');
         // Route::get('reports/create', ReportCreate::class)->name('report.create');
         // Route::get('stocks', StockIndex::class)->name('stock.index');
+
+
     });
 });
