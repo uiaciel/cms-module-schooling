@@ -20,7 +20,7 @@ Route::get('/ppdb/registrasi', [SchoolingController::class, 'registrasi'])->name
 Route::post('/ppdb/registrasi/success', [SchoolingController::class, 'saveregister'])->name('ppdb.store');
 Route::get('/ppdb/{id}', [SchoolingController::class, 'success'])->name('ppdb.success');
 
-Route::get('/ppdb/{slug}/daftar', Ppdb::class)->name('ppdb.wizard');
+Route::get('/ppdb/online/{slug}', Ppdb::class)->name('ppdb.wizard');
 
 Route::get('/ppdb/registration/{id}/pdf', [SchoolingController::class, 'pdf'])->name('ppdb.registration.pdf');
 
@@ -44,7 +44,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Route::get('reports', ReportIndex::class)->name('report.index');
         // Route::get('reports/create', ReportCreate::class)->name('report.create');
         // Route::get('stocks', StockIndex::class)->name('stock.index');
-
 
     });
 });

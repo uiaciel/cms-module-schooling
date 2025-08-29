@@ -6,6 +6,8 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Modules\Schooling\Models\PpdbPeriod;
 use Modules\Schooling\Models\Applicant;
+use Modules\Schooling\Models\PpdbRegistration;
+
 use Modules\Schooling\Models\ParentData;
 use Modules\Schooling\Models\PpdbDocument;
 
@@ -15,6 +17,7 @@ class Ppdb extends Component
 
     public $step = 1;
     public $ppdb;
+    public $ppdbs;
     public $slug;
 
     // Step 1: Applicant
@@ -51,7 +54,8 @@ class Ppdb extends Component
     public function mount($slug)
     {
         $this->slug = $slug;
-        $this->ppdb = PpdbPeriod::where('year', $slug)->firstOrFail();
+        $this->ppdb = PpdbPeriod::with('applicants', 'registrations')->where('year', $slug)->firstOrFail();
+        $this->ppdbs = PpdbRegistration::with('applicant')->where('ppdb_period_id', $this->ppdb->id)->get();
     }
 
     public function nextStep()

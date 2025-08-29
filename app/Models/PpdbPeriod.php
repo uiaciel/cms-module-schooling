@@ -10,7 +10,7 @@ class PpdbPeriod extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['year', 'start_date', 'end_date', 'description'];
+    protected $fillable = ['year', 'start_date', 'end_date', 'description', 'brochure_pdf', 'brochure_img', 'status'];
 
     public function applicants()
     {
