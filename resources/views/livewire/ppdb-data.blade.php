@@ -11,8 +11,8 @@
                             <div class="mb-2 text-muted small">
                                 <span class="me-3"><i class="bi bi-calendar-event"></i>
 
-                                    Buka: {{ $ppdb->start_date }}
-                                    | Tutup: {{ $ppdb->end_date }}
+                                    Buka: {{ \Carbon\Carbon::parse($ppdb->start_date)->format('d M Y') }}
+                                    | Tutup: {{ \Carbon\Carbon::parse($ppdb->end_date)->format('d M Y') }}
                                 </span>
 
                             </div>
@@ -79,9 +79,9 @@
         </div>
         <div class="col-md-4">
             <div class="mb-1">
-                <span class="badge bg-primary">Total: {{ $totalRegistrasi }}</span>
-                <span class="badge bg-success">Terverifikasi: {{ $totalVerifikasi }}</span>
-                <span class="badge bg-warning text-dark">Belum Verifikasi: {{ $totalNonVerifikasi }}</span>
+                <span class="badge bg-primary fs-6">Total: {{ $totalRegistrasi }}</span>
+                <span class="badge bg-success fs-6">Terverifikasi: {{ $totalVerifikasi }}</span>
+                <span class="badge bg-warning text-dark fs-6">Belum Verifikasi: {{ $totalNonVerifikasi }}</span>
             </div>
 
         </div>

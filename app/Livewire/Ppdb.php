@@ -80,16 +80,8 @@ class Ppdb extends Component
             $this->step++;
             return;
         }
+
         if ($this->step == 3) {
-            // Validasi kebutuhan khusus jika perlu
-            // $this->validate(['applicant.notes' => 'required']);
-            Applicant::where('id', $this->applicant_id)
-                ->update(['notes' => $this->applicant['notes']]);
-            // Generate registration code
-            $this->step++;
-            return;
-        }
-        if ($this->step == 4) {
 
             $this->validate([
                 'birth_certificate' => 'required|file|mimes:pdf,jpg,png',
@@ -121,7 +113,10 @@ class Ppdb extends Component
             ]);
             $this->registration_code = $code;
             $this->pdf_link = route('ppdb.registration.pdf', $registration->id);
+
             $this->step++;
+            $this->dispatch('downloadPdf', route('ppdb.registration.pdf', $registration->id));
+
             $this->dispatch('registrationFinished');
             return;
             return;
