@@ -3,8 +3,16 @@
 namespace Modules\Schooling\Livewire;
 
 use Livewire\Component;
+use Maatwebsite\Excel\Facades\Excel;
+use Modules\Schooling\Exports\PpdbExport;
 use Modules\Schooling\Models\PpdbPeriod;
+use Illuminate\Support\Facades\Storage;
+use ZipArchive;
+use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Modules\Schooling\Models\Applicant;
 use Modules\Schooling\Models\PpdbRegistration;
+use Illuminate\Support\Facades\Response;
 
 class PpdbData extends Component
 {
@@ -25,6 +33,9 @@ class PpdbData extends Component
     public $totalRegistrasi = 0;
     public $totalVerifikasi = 0;
     public $totalNonVerifikasi = 0;
+
+    public $downloadUrl = '';
+    public $zipFileName = '';
 
     public function mount($year = null)
     {
@@ -92,6 +103,69 @@ class PpdbData extends Component
         $this->showModal = true;
     }
 
+    public function downloadZip($applicantId)
+    {
+        // 1. Ambil Data Pendaftar
+        $registration = PpdbRegistration::where('applicant_id', $applicantId)
+            ->with(['applicant', 'applicant.document'])
+            ->firstOrFail();
+
+        $applicant = $registration->applicant;
+        $documents = $applicant->document;
+
+        $sanitizedName = Str::slug($applicant->full_name);
+        $zipFileName = $sanitizedName . '.zip';
+        $tempDir = 'temp/' . $sanitizedName;
+
+        // 2. Bersihkan dan buat direktori temporary
+        Storage::disk('local')->deleteDirectory($tempDir);
+        Storage::disk('local')->makeDirectory($tempDir);
+
+        $zip = new ZipArchive;
+        $zipPath = Storage::disk('local')->path($tempDir . '/' . $zipFileName);
+
+        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
+            // 3. Masukkan File Dokumen dengan Nama Baru
+            $documentMap = [
+                'birth_certificate' => 'akta',
+                'family_card' => 'kartu-keluarga',
+                'photo' => 'foto',
+                'certificate_pa' => 'ijazah-sertifikat',
+            ];
+
+            foreach ($documentMap as $field => $newName) {
+                if ($documents->$field) {
+                    $dbPath = $documents->$field;
+
+                    if (Storage::disk('local')->exists($dbPath)) {
+                        $extension = pathinfo($dbPath, PATHINFO_EXTENSION);
+                        $newFileName = $sanitizedName . '_' . $newName . '.' . $extension;
+
+                        // Use Storage::disk('private')->path() to get the absolute path
+                        $zip->addFile(Storage::disk('local')->path($dbPath), $newFileName);
+                    }
+                }
+            }
+
+            // 4. Masukkan File PDF Bukti Registrasi
+            $pdfContent = Pdf::loadView('schooling::pdf.registration', compact('registration'))->output();
+            $pdfFileName = $sanitizedName . '_bukti-registrasi-' . $registration->registration_code . '.pdf';
+
+            // Simpan PDF ke direktori sementara
+            Storage::disk('local')->put($tempDir . '/' . $pdfFileName, $pdfContent);
+            $zip->addFile(Storage::disk('local')->path($tempDir . '/' . $pdfFileName), $pdfFileName);
+
+            $zip->close();
+
+            // 5. Unduh file dan hapus setelah terkirim
+            return Response::download($zipPath)->deleteFileAfterSend(true);
+        }
+
+        // Jika proses gagal, kembalikan pesan error
+        session()->flash('error', 'Gagal membuat file ZIP.');
+        return back();
+    }
+
     public function updateStatus()
     {
         if ($this->selectedRegistration) {
@@ -128,6 +202,14 @@ class PpdbData extends Component
     public function closeModal()
     {
         $this->showModal = false;
+    }
+
+    public function exportExcel($id)
+    {
+        $tahun = PpdbPeriod::where('id', $id)->first();
+        $date = now()->format('Y-m-d');
+
+        return Excel::download(new PpdbExport($id), 'data-pendaftar-' . $tahun->year . '-download_tgl-' . $date . '.xlsx');
     }
 
     public function render()

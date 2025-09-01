@@ -33,6 +33,7 @@
                         @forelse ($ppdbs as $ppdb)
                         <tr>
                             <td><a href="/ppdb/online/{{ $ppdb->year }}">{{ $ppdb->year }}</a>
+                                <p class="text-muted">{{$ppdb->description}}</p>
                             </td>
                             <td>{{ \Carbon\Carbon::parse($ppdb->start_date)->format('d M Y') }}</td>
                             <td>{{ \Carbon\Carbon::parse($ppdb->end_date)->format('d M Y') }}</td>
@@ -42,8 +43,13 @@
                                 <a href="/admin/ppdb/{{ $ppdb->year }}" class="btn btn-sm btn-success">Detail</a>
                                 <button class="btn btn-sm btn-primary"
                                     wire:click="editPpdb({{ $ppdb->id }})">Edit</button>
+                                <a href="#" wire:click="exportExcel({{ $ppdb->id }})" class="btn btn-sm btn-success">
+                                    <i class="fas fa-file-excel"></i> Export
+                                </a>
+                                @if(Auth::id() == 1)
                                 <button class="btn btn-sm btn-danger" wire:click="deletePpdb({{ $ppdb->id }})"
                                     wire:confirm="Anda yakin ingin menghapus periode ini beserta semua data pendaftarnya?">Hapus</button>
+                                @endif
                             </td>
                         </tr>
                         @empty

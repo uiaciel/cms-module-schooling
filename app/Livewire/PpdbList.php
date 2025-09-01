@@ -5,6 +5,8 @@ namespace Modules\Schooling\Livewire;
 use Livewire\WithFileUploads;
 use Livewire\Component;
 use Modules\Schooling\Models\PpdbPeriod;
+use Maatwebsite\Excel\Facades\Excel;
+use Modules\Schooling\Exports\PpdbExport;
 
 class PpdbList extends Component
 {
@@ -121,13 +123,20 @@ class PpdbList extends Component
                 $applicant->delete();
             }
 
-            // Delete the PpdbPeriod itself
             $ppdb->delete();
             session()->flash('success', 'Data PPDB dan semua data terkait berhasil dihapus.');
         } else {
             session()->flash('error', 'Data PPDB tidak ditemukan.');
         }
         $this->loadPpdbs();
+    }
+
+    public function exportExcel($id)
+    {
+        $tahun = PpdbPeriod::where('id', $id)->first();
+        $date = now()->format('Y-m-d');
+
+        return Excel::download(new PpdbExport($id), 'data-pendaftar-' . $tahun->year . '-download_tgl-' . $date . '.xlsx');
     }
 
     public function render()

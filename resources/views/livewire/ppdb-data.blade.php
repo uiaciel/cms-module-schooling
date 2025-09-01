@@ -56,7 +56,16 @@
     {{-- Baris 3: Judul Tabel & Bulk Update --}}
     <div class="row mb-2 align-items-center">
 
-        <div class="col-md-8 text-end">
+        <div class="col-md-4">
+            <div class="mb-1">
+                <span class="badge bg-primary fs-6">Total: {{ $totalRegistrasi }}</span>
+                <span class="badge bg-success fs-6">Verified: {{ $totalVerifikasi }}</span>
+                <span class="badge bg-warning text-dark fs-6">Unverified: {{ $totalNonVerifikasi }}</span>
+            </div>
+
+        </div>
+
+        <div class="col-md-6 text-end">
 
             <form wire:submit.prevent="bulkUpdateStatus">
                 <div class="input-group mb-3">
@@ -76,15 +85,19 @@
                 </div>
 
             </form>
+
+
         </div>
-        <div class="col-md-4">
-            <div class="mb-1">
-                <span class="badge bg-primary fs-6">Total: {{ $totalRegistrasi }}</span>
-                <span class="badge bg-success fs-6">Terverifikasi: {{ $totalVerifikasi }}</span>
-                <span class="badge bg-warning text-dark fs-6">Belum Verifikasi: {{ $totalNonVerifikasi }}</span>
+        <div class="col-md-2">
+            <div class="mb-3">
+                <a href="#" wire:click="exportExcel({{ $ppdb->id }})" class="btn  btn-success">
+                    <i class="fas fa-file-excel"></i> Export All
+                </a>
             </div>
 
         </div>
+
+
     </div>
 
     {{-- Tabel Data --}}
@@ -100,7 +113,7 @@
                     <th>Nama Lengkap</th>
                     <th>Tempat, Tanggal Lahir</th>
                     <th>Status</th>
-                    <th>Aksi</th>
+                    <th>Aksi & Download</th>
                 </tr>
             </thead>
             <tbody>
@@ -118,9 +131,24 @@
                     </td>
                     <td><span class="badge bg-info">{{ ucfirst($reg->status) }}</span></td>
                     <td>
-                        <button class="btn btn-sm btn-primary" wire:click="showDetail({{ $reg->id }})">
-                            Detail &amp; Verifikasi
-                        </button>
+                        <div class="btn-group" role="group" aria-label="ppdb-button">
+                            <button class="btn btn-sm btn-primary" wire:click="showDetail({{ $reg->id }})">
+                                Detail &amp; Verifikasi
+                            </button>
+
+                            <button wire:click="downloadZip({{ $reg->applicant->id }})" class="btn btn-sm btn-success"
+                                wire:loading.attr="disabled" wire:target="downloadZip({{ $reg->applicant->id }})">
+                                <span wire:loading wire:target="downloadZip({{ $reg->applicant->id }})">
+                                    <span class="spinner-border spinner-border-sm" role="status"
+                                        aria-hidden="true"></span>
+                                    Loading...
+                                </span>
+                                <span wire:loading.remove wire:target="downloadZip({{ $reg->applicant->id }})">
+                                    <i class="fas fa-download"></i>
+                                </span>
+                            </button>
+                        </div>
+
                     </td>
                 </tr>
                 @empty
@@ -132,6 +160,7 @@
         </table>
 
     </div>
+
 
     @if ($showModal && $selectedRegistration)
     <div class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.3)">
@@ -478,7 +507,7 @@
                                                             target="_blank">
                                                             <img src="{{ route('admin.file', $selectedRegistration->applicant->document->certificate_pa) }}"
                                                                 class="img-fluid rounded border"
-                                                                alt="Sertifikat Pendidikan Agama"
+                                                                alt="Ijazah atau Sertifikat"
                                                                 style="height: 150px; width: 100%; object-fit: cover;">
                                                         </a>
                                                         <small class="d-block mt-2"><a
@@ -496,15 +525,19 @@
                                         </div>
                                     </div>
                                 </div>
+
+
                             </div>
 
                         </div>
-                    </div>
 
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>
-    <div class="modal-backdrop fade show"></div>
-    @endif
+</div>
+<div class="modal-backdrop fade show"></div>
+@endif
 </div>
